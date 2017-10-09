@@ -1,37 +1,30 @@
 package pl.javastart.dao;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import pl.javastart.model.Book;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
+@Transactional
 @Repository
 public class BookDaoImpl implements BookDao {
 
-    @PersistenceUnit(name = "spring-jpa-pu")
-    private EntityManagerFactory emFactory;
-
-    BookDaoImpl() {
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
-    public void save(Book books) {
-        EntityManager entityManager = emFactory.createEntityManager();
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.begin();
+    public void save(Book books){
         entityManager.persist(books);
-        tx.commit();
-        entityManager.close();
     }
 
     @Override
     public Book get(Long id) {
-        EntityManager entityManager = emFactory.createEntityManager();
         Book book = entityManager.find(Book.class, id);
-        entityManager.close();
         return book;
     }
 }
